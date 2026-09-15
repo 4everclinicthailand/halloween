@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Halloween Beauty Quiz 🎃</title>
+
+<!-- Google Font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #100b12;
+    --card: #19111b;
+    --card2: #211520;
+    --pink: #f3a6c8;
+    --pink-light: #ffd8e9;
+    --purple: #9c6cff;
+    --text: #fff8fc;
+    --muted: #b9aab5;
+    --border: rgba(255,255,255,0.10);
+    --shadow: 0 25px 70px rgba(0,0,0,0.45);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    font-family: "DM Sans", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 20% 10%, rgba(156,108,255,.18), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(243,166,200,.16), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(156,108,255,.10), transparent 35%),
+        var(--bg);
+    overflow-x: hidden;
+}
+
+/* Background stars */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .5;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,.7) 1px, transparent 1px),
+        radial-gradient(circle, rgba(243,166,200,.5) 1px, transparent 1px);
+    background-size: 95px 95px, 145px 145px;
+    background-position: 10px 20px, 50px 80px;
+}
+
+/* Floating decorations */
+.decor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    opacity: .75;
+}
+
+.moon {
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    background: #fff4fa;
+    box-shadow: 0 0 45px rgba(255,220,240,.25);
+    top: 55px;
+    right: 8%;
+}
+
+.moon::after {
+    content: "";
+    position: absolute;
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    background: var(--bg);
+    left: 30px;
+    top: -12px;
+}
+
+.bat {
+    font-size: 32px;
+}
+
+.bat1 { top: 14%; left: 7%; transform: rotate(-12deg); }
+.bat2 { top: 30%; right: 5%; transform: rotate(15deg); }
+.bat3 { bottom: 15%; left: 8%; transform: rotate(10deg); }
+
+/* Main */
+.container {
+    width: min(720px, calc(100% - 30px));
+    margin: 0 auto;
+    padding: 55px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.screen {
+    display: none;
+    animation: fadeIn .45s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Welcome */
+.welcome {
+    text-align: center;
+    padding: 35px 25px 45px;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    border: 1px solid rgba(243,166,200,.25);
+    background: rgba(243,166,200,.07);
+    border-radius: 50px;
+    color: var(--pink-light);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(48px, 10vw, 78px);
+    line-height: .95;
+    font-weight: 600;
+    letter-spacing: -2px;
+}
+
+h1 span {
+    display: block;
+    color: var(--pink);
+}
+
+.subtitle {
+    max-width: 500px;
+    margin: 22px auto 30px;
+    color: var(--muted);
+    line-height: 1.8;
+    font-size: 15px;
+}
+
+.start-btn,
+.line-btn,
+.restart-btn {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+.start-btn {
+    padding: 16px 38px;
+    border-radius: 100px;
+    color: #24121d;
+    background: linear-gradient(135deg, #ffd3e6, #e993bb);
+    box-shadow: 0 12px 35px rgba(243,166,200,.2);
+    font-size: 15px;
+}
+
+.start-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 45px rgba(243,166,200,.3);
+}
+
+.note {
+    margin-top: 18px;
+    color: #806f7b;
+    font-size: 11px;
+}
+
+/* Quiz */
+.quiz-card {
+    background: rgba(25,17,27,.88);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(15px);
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.question-number {
+    font-size: 12px;
+    color: var(--pink);
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.progress {
+    width: 100%;
+    height: 5px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+    margin-bottom: 35px;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    border-radius: inherit;
+    transition: width .4s ease;
+}
+
+.question {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(27px, 5vw, 38px);
+    line-height: 1.25;
+    margin-bottom: 28px;
+}
+
+.answers {
+    display: grid;
+    gap: 12px;
+}
+
+.answer {
+    position: relative;
+    width: 100%;
+    padding: 17px 18px;
+    text-align: left;
+    color: var(--text);
+    background: rgba(255,255,255,.035);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: .25s ease;
+}
+
+.answer:hover {
+    transform: translateX(4px);
+    border-color: rgba(243,166,200,.55);
+    background: rgba(243,166,200,.07);
+}
+
+.answer .letter {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin-right: 10px;
+    background: rgba(243,166,200,.10);
+    color: var(--pink);
+    font-weight: 700;
+}
+
+/* Result */
+.result-card {
+    text-align: center;
+    background: rgba(25,17,27,.9);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    padding: 40px 30px;
+    box-shadow: var(--shadow);
+}
+
+.result-icon {
+    font-size: 68px;
+    margin-bottom: 15px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.result-small {
+    color: var(--pink);
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.result-title {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(38px, 8vw, 58px);
+    margin: 8px 0 12px;
+}
+
+.result-desc {
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 500px;
+    margin: 0 auto 25px;
+    font-size: 14px;
+}
+
+.match-box {
+    background: linear-gradient(
+        135deg,
+        rgba(156,108,255,.10),
+        rgba(243,166,200,.08)
+    );
+    border: 1px solid rgba(243,166,200,.16);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 500px;
+}
+
+.match-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #9f8e9b;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+}
+
+.match-name {
+    font-family: "Playfair Display", serif;
+    font-size: 24px;
+    color: var(--pink-light);
+}
+
+.promo {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px dashed rgba(243,166,200,.25);
+}
+
+.promo strong {
+    display: block;
+    color: var(--pink-light);
+    margin-bottom: 5px;
+}
+
+.promo p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.line-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 15px 28px;
+    border-radius: 100px;
+    background: #b8f26b;
+    color: #17200b;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.line-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.05);
+}
+
+.restart-btn {
+    display: block;
+    margin: 18px auto 0;
+    padding: 10px 18px;
+    background: transparent;
+    color: #9f8e9b;
+    font-size: 12px;
+}
+
+.restart-btn:hover {
+    color: white;
+}
+
+/* Result decorative */
+.result-divider {
+    width: 55px;
+    height: 1px;
+    margin: 22px auto;
+    background: rgba(243,166,200,.35);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .container {
+        padding: 25px 0 40px;
+    }
+
+    .moon {
+        width: 60px;
+        height: 60px;
+        top: 25px;
+        right: 5%;
+    }
+
+    .moon::after {
+        width: 60px;
+        height: 60px;
+        left: 20px;
+        top: -8px;
+    }
+
+    .quiz-card,
+    .result-card {
+        padding: 25px 18px;
+        border-radius: 22px;
+    }
+
+    .welcome {
+        padding: 55px 10px 40px;
+    }
+
+    .question {
+        font-size: 29px;
+    }
+
+    .answer {
+        padding: 15px 13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Decorations -->
+<div class="decor moon"></div>
+<div class="decor bat bat1">🦇</div>
+<div class="decor bat bat2">🦇</div>
+<div class="decor bat bat3">🦇</div>
+
+<div class="container">
+
+    <!-- ================= WELCOME ================= -->
+    <section id="welcomeScreen" class="screen active">
+
+        <div class="welcome">
+
+            <div class="eyebrow">
+                🎃 Halloween Beauty Quiz
+            </div>
+
+            <h1>
+                WHAT'S YOUR
+                <span>BEAUTY TYPE?</span>
+            </h1>
+
+            <p class="subtitle">
+                ตุลานี้…ลองมาดูกันว่า<br>
+                <strong>“ตัวตนด้าน Beauty ของคุณ”</strong>
+                เป็นแบบไหน 👻
+            </p>
+
+            <button class="start-btn" onclick="startQuiz()">
+                ✨ START THE QUIZ
+            </button>
+
+            <div class="note">
+                ใช้เวลาเพียง 1 นาที • 8 คำถาม
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= QUIZ ================= -->
+    <section id="quizScreen" class="screen">
+
+        <div class="quiz-card">
+
+            <div class="topbar">
+                <div class="question-number" id="questionNumber">
+                    QUESTION 01
+                </div>
+
+                <div class="question-number" id="questionCount">
+                    1 / 8
+                </div>
+            </div>
+
+            <div class="progress">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="question" id="questionText"></div>
+
+            <div class="answers" id="answers"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= RESULT ================= -->
+    <section id="resultScreen" class="screen">
+
+        <div class="result-card">
+
+            <div class="result-icon" id="resultIcon">✨</div>
+
+            <div class="result-small">
+                YOUR HALLOWEEN BEAUTY TYPE
+            </div>
+
+            <div class="result-title" id="resultTitle">
+                The Glow Witch
+            </div>
+
+            <div class="result-divider"></div>
+
+            <p class="result-desc" id="resultDescription"></p>
+
+            <div class="match-box">
+
+                <div class="match-label">
+                    Your Beauty Match
+                </div>
+
+                <div class="match-name" id="beautyMatch"></div>
+
+            </div>
+
+            <div class="promo">
+
+                <strong>🎁 Halloween Beauty Privilege</strong>
+
+                <p>
+                    รับสิทธิ์พิเศษประจำเดือนตุลาคม
+                    เมื่อแสดงผลลัพธ์นี้ที่คลินิก
+                </p>
+
+            </div>
+
+            <a
+                id="lineButton"
+                class="line-btn"
+                href="#"
+                target="_blank"
+            >
+                💚 รับสิทธิ์ผ่าน LINE
+            </a>
+
+            <button class="restart-btn" onclick="restartQuiz()">
+                ↻ เล่นอีกครั้ง
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   LINE
+===================================================== */
+
+const LINE_URL = "https://line.me/ti/p/@526rdnlr";
+
+
+/* =====================================================
+   QUESTIONS
+===================================================== */
+
+const questions = [
+
+    {
+        question: "ถ้ามีเวลาเตรียมตัวก่อนออกงาน 1 อย่าง คุณจะเลือกอะไร?",
+        answers: [
+            { text: "เติมความฉ่ำให้ผิว ดูโกลว์ขึ้น ✨", type: "A" },
+            { text: "เติมเต็มจุดที่ทำให้หน้าดูมีมิติ 🧛", type: "B" },
+            { text: "เก็บรายละเอียดให้หน้าดูเป๊ะ 👑", type: "C" },
+            { text: "กู้ผิวโทรมให้กลับมาดูสดใส 👻", type: "D" }
+        ]
+    },
+
+    {
+        question: "สิ่งที่ทำให้คุณรู้สึกว่า “วันนี้หน้าไม่รอด!” คืออะไร?",
+        answers: [
+            { text: "หน้าดูโทรม ไม่สดใส", type: "D" },
+            { text: "ผิวแห้ง ดูไม่ฉ่ำ", type: "A" },
+            { text: "บางจุดดูตอบหรือไม่เต็ม", type: "B" },
+            { text: "ริ้วรอยหรือเส้นบนหน้าดูชัด", type: "C" }
+        ]
+    },
+
+    {
+        question: "ถ้าพรุ่งนี้ตื่นมาแล้วเลือก Beauty Wish ได้ 1 อย่าง คุณจะเลือกอะไร?",
+        answers: [
+            { text: "ผิวฉ่ำเหมือนเปิดไฟให้หน้า ✨", type: "A" },
+            { text: "หน้าดูเต็มและมีมิติขึ้น", type: "B" },
+            { text: "หน้าดูเรียบและเป๊ะขึ้น", type: "C" },
+            { text: "ผิวดูสดใสสุขภาพดีขึ้น", type: "D" }
+        ]
+    },
+
+    {
+        question: "เวลาส่องกระจก คุณมักเช็กอะไรก่อน?",
+        answers: [
+            { text: "วันนี้ผิวดูฉ่ำไหม?", type: "A" },
+            { text: "หน้าดูตอบหรือโทรมไปหรือเปล่า?", type: "B" },
+            { text: "ริ้วรอยตรงนี้ชัดไหมนะ?", type: "C" },
+            { text: "ทำไมวันนี้หน้าดูเหนื่อยจัง?", type: "D" }
+        ]
+    },
+
+    {
+        question: "ถ้าต้องเลือก Beauty Vibe ประจำตัว คุณคือสายไหน?",
+        answers: [
+            { text: "Glass Skin Girl ✨", type: "A" },
+            { text: "Sculpted Beauty 🧛", type: "B" },
+            { text: "Clean & Sharp 👑", type: "C" },
+            { text: "Fresh Skin Lover 👻", type: "D" }
+        ]
+    },
+
+    {
+        question: "ก่อนถ่ายรูป สิ่งที่คุณอยากให้หน้าดูดีที่สุดคืออะไร?",
+        answers: [
+            { text: "ผิวเล่นแสงสวย ✨", type: "A" },
+            { text: "ใบหน้าดูมีมิติ", type: "B" },
+            { text: "หน้าดูเป๊ะทุกมุม", type: "C" },
+            { text: "ผิวดูสดใส ไม่โทรม", type: "D" }
+        ]
+    },
+
+    {
+        question: "ถ้ามีคนทักว่า “ช่วงนี้ดูดีขึ้นนะ” คุณอยากให้เขาหมายถึงอะไร?",
+        answers: [
+            { text: "ผิวดูฉ่ำมาก!", type: "A" },
+            { text: "หน้าดูมีมิติขึ้นนะ", type: "B" },
+            { text: "ทำไมหน้าดูเป๊ะจัง?", type: "C" },
+            { text: "ดูสดใสขึ้นมากเลย", type: "D" }
+        ]
+    },
+
+    {
+        question: "Halloween นี้ ถ้ามีพลังวิเศษ 1 อย่าง คุณจะเลือกอะไร?",
+        answers: [
+            { text: "✨ Glow Spell — เสกผิวให้ฉ่ำโกลว์", type: "A" },
+            { text: "🧛 Face Sculpt Spell — เสกหน้าให้ดูมีมิติ", type: "B" },
+            { text: "👑 Perfect Face Spell — เสกหน้าให้ดูเป๊ะ", type: "C" },
+            { text: "👻 Skin Rescue Spell — เสกผิวโทรมให้กลับมาสดใส", type: "D" }
+        ]
+    }
+
+];
+
+
+/* =====================================================
+   RESULTS
+===================================================== */
+
+const results = {
+
+    A: {
+        icon: "🧙‍♀️",
+        title: "The Glow Witch",
+        description:
+            "คุณคือแม่มดสาย Glow! ✨ พลังของคุณคือผิวที่ดูฉ่ำ สดใส และมีความโกลว์แบบคนพักผ่อนเพียงพอ คุณเป็นคนที่สังเกตเรื่องผิวเป็นอันดับต้น ๆ และชอบลุคที่ดูสดใสเป็นธรรมชาติ",
+        match:
+            "Skin Booster • งานดูแลผิว • Skin Glow"
+    },
+
+    B: {
+        icon: "🧛‍♀️",
+        title: "The Face Vampire",
+        description:
+            "คุณคือสาย Face ตัวจริง 🧛‍♀️ คุณให้ความสำคัญกับมิติและความสมดุลของใบหน้า ชอบลุคที่ดูมีโครง มีมิติ แต่ยังคงความเป็นตัวเอง",
+        match:
+            "Filler • งานเติมเต็ม • Facial Contouring"
+    },
+
+    C: {
+        icon: "👑",
+        title: "The Botox Queen",
+        description:
+            "คุณคือราชินีสายเป๊ะ 👑 รายละเอียดเล็ก ๆ บนใบหน้าก็ไม่รอดสายตาคุณ คุณชอบลุคที่ดูเรียบ เนี๊ยบ และใส่ใจเรื่องริ้วรอยบนใบหน้า",
+        match:
+            "Botulinum Toxin • งานดูแลริ้วรอย"
+    },
+
+    D: {
+        icon: "👻",
+        title: "The Skin Monster",
+        description:
+            "คุณคือสายกู้ผิวตัวจริง 👻 ผิวที่ดูสดใสและสุขภาพดีคือสิ่งที่คุณให้ความสำคัญที่สุด ไม่ว่าจะเจอวันที่ผิวโทรมแค่ไหน ก็พร้อมกลับมากู้ผิวให้ดูดีอีกครั้ง",
+        match:
+            "Skin Booster • Skin Treatment • งานฟื้นฟูผิว"
+    }
+
+};
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let currentQuestion = 0;
+
+let scores = {
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0
+};
+
+
+/* =====================================================
+   START QUIZ
+===================================================== */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    scores = {
+        A: 0,
+        B: 0,
+        C: 0,
+        D: 0
+    };
+
+    showScreen("quizScreen");
+
+    showQuestion();
+
+}
+
+
+/* =====================================================
+   SHOW QUESTION
+===================================================== */
+
+function showQuestion() {
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        "QUESTION " +
+        String(currentQuestion + 1).padStart(2, "0");
+
+    document.getElementById("questionCount").textContent =
+        `${currentQuestion + 1} / ${questions.length}`;
+
+    document.getElementById("progressFill").style.width =
+        `${((currentQuestion) / questions.length) * 100}%`;
+
+    document.getElementById("questionText").textContent =
+        q.question;
+
+    const answersContainer =
+        document.getElementById("answers");
+
+    answersContainer.innerHTML = "";
+
+    q.answers.forEach((answer, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "answer";
+
+        button.innerHTML = `
+            <span class="letter">
+                ${String.fromCharCode(65 + index)}
+            </span>
+            ${answer.text}
+        `;
+
+        button.onclick = () => selectAnswer(answer.type);
+
+        answersContainer.appendChild(button);
+
+    });
+
+}
+
+
+/* =====================================================
+   SELECT ANSWER
+===================================================== */
+
+function selectAnswer(type) {
+
+    scores[type]++;
+
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+
+        showQuestion();
+
+    } else {
+
+        showResult();
+
+    }
+
+}
+
+
+/* =====================================================
+   CALCULATE RESULT
+===================================================== */
+
+function showResult() {
+
+    const maxScore =
+        Math.max(
+            scores.A,
+            scores.B,
+            scores.C,
+            scores.D
+        );
+
+    const winners =
+        Object.keys(scores).filter(
+            type => scores[type] === maxScore
+        );
+
+    /*
+       ถ้าคะแนนเท่ากัน จะสุ่มจากผลที่คะแนนสูงสุด
+    */
+
+    const winner =
+        winners[Math.floor(Math.random() * winners.length)];
+
+    const result = results[winner];
+
+    document.getElementById("resultIcon").textContent =
+        result.icon;
+
+    document.getElementById("resultTitle").textContent =
+        result.title;
+
+    document.getElementById("resultDescription").textContent =
+        result.description;
+
+    document.getElementById("beautyMatch").textContent =
+        result.match;
+
+    document.getElementById("lineButton").href =
+        LINE_URL;
+
+    document.getElementById("progressFill").style.width = "100%";
+
+    showScreen("resultScreen");
+
+}
+
+
+/* =====================================================
+   SCREEN SWITCH
+===================================================== */
+
+function showScreen(id) {
+
+    document.querySelectorAll(".screen")
+        .forEach(screen => {
+            screen.classList.remove("active");
+        });
+
+    document.getElementById(id)
+        .classList.add("active");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   RESTART
+===================================================== */
+
+function restartQuiz() {
+
+    startQuiz();
+
+}
+
+</script>
+
+</body>
+</html>
